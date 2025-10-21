@@ -49,7 +49,8 @@ To download the dataset automatically, you need to set up Kaggle API credentials
 Run the main script:
 
 ```bash
-python main.py
+chmod +x ./setup_and_run.sh
+./setup_and_run.sh
 ```
 
 The script will:

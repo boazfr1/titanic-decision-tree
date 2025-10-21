@@ -5,6 +5,10 @@ import kaggle
 import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
+from numpy import random
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+
 
 
 creds = ''
@@ -36,8 +40,30 @@ def process_data(path):
     df['Sex'] = pd.Categorical(df.Sex)
     return df
 
+def spleet_to_validation_and_data(df):
+    random.seed(42)
+    trn_df,val_df = train_test_split(df, test_size=0.25)
+    trn_df[categorical] = trn_df[categorical].apply(lambda x: x.cat.codes)
+    val_df[categorical] = val_df[categorical].apply(lambda x: x.cat.codes)
+    return trn_df,val_df
+
+def seperate_target_and_features(df):
+    features = df[continuous + categorical].copy()
+    target = df[dependent].copy()
+    return features,target
+
 download_data()
 data = process_data(path/'train.csv')
 test_data = process_data(path/'test.csv')
+df_trn,df_val = spleet_to_validation_and_data(data)
 
-m = DecisionTreeClassifier(max_leaf_nodes=4).fit(trn_xs, trn_y);
+trn_features, trn_target = seperate_target_and_features(df_trn)
+m = DecisionTreeClassifier(max_leaf_nodes=55).fit(trn_features, trn_target)
+
+val_features,val_target = seperate_target_and_features(df_val)
+preds = m.predict(val_features)
+mean_absolute_error(val_target,preds)
+print("mean_absolute_error: ",mean_absolute_error(val_target,preds))
+
+
+
